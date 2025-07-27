@@ -5196,16 +5196,11 @@ mod tests {
         let result =
             SyscallBroadcastMemcpy::rust(&mut invoke_context, dst_a, dst_b, src, 2, 2, &mut memory_mapping);
 
-        // let src_result = memory_mapping.load(src);
-        // let dst_a_result = memory_mapping.load(dst_a);
-        // let dst_b_result = memory_mapping.load(dst_b);
+        match result {
+            Ok(code) =>  assert_matches!(code, 0),
+            Err(e) => println!("Error: {}", e),
+        }
 
-        let regions = memory_mapping.get_regions();
-
-        // assert_matches!(
-        //     result,
-        //     Result::Err(error) if error.downcast_ref::<SyscallError>().unwrap() == &SyscallError::CopyOverlapping
-        // );
     }
 
     #[test_case(0xFFFFFFFFF, 0x100000006, 0xFFFFFFFFF)] // Dst lower bound

@@ -6,7 +6,7 @@ use {
     solana_account::{Account, AccountSharedData, ReadableAccount, WritableAccount},
     solana_bpf_loader_program::syscalls::{
         SyscallAbort, SyscallGetClockSysvar, SyscallGetRentSysvar, SyscallInvokeSignedRust,
-        SyscallLog, SyscallMemcmp, SyscallMemcpy, SyscallMemmove, SyscallMemset,
+        SyscallLog, SyscallMemcmp, SyscallMemcpy, SyscallBroadcastMemcpy, SyscallMemmove, SyscallMemset,
         SyscallSetReturnData,
     },
     solana_clock::{Clock, Slot, UnixTimestamp},
