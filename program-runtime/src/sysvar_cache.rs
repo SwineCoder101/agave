@@ -166,6 +166,10 @@ impl SysvarCache {
             .ok_or(InstructionError::UnsupportedSysvar)
     }
 
+    pub fn peak_stake_history(&self) -> Result<Arc<StakeHistory>, InstructionError> {
+        self.stake_history_obj.
+    }
+
     pub fn get_slot_hashes(&self) -> Result<Arc<SlotHashes>, InstructionError> {
         self.slot_hashes_obj
             .clone()
