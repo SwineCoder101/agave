@@ -3,7 +3,7 @@ pub use self::{
     logging::{
         SyscallLog, SyscallLogBpfComputeUnits, SyscallLogData, SyscallLogPubkey, SyscallLogU64,
     },
-    mem_ops::{SyscallMemcmp, SyscallMemcpy, SyscallMemmove, SyscallMemset},
+    mem_ops::{SyscallMemcmp, SyscallMemcpy, SyscallMemmove, SyscallMemset, SyscallBroadcastMemcpy},
     sysvar::{
         SyscallGetClockSysvar, SyscallGetEpochRewardsSysvar, SyscallGetEpochScheduleSysvar,
         SyscallGetFeesSysvar, SyscallGetLastRestartSlotSysvar, SyscallGetRentSysvar,
@@ -459,6 +459,7 @@ pub fn create_program_runtime_environment_v1<'a>(
 
     // Memory ops
     result.register_function("sol_memcpy_", SyscallMemcpy::vm)?;
+    result.register_function("sol_broadcastmemcpy_", SyscallBroadcastMemcpy::vm)?;
     result.register_function("sol_memmove_", SyscallMemmove::vm)?;
     result.register_function("sol_memset_", SyscallMemset::vm)?;
     result.register_function("sol_memcmp_", SyscallMemcmp::vm)?;
@@ -5176,6 +5177,30 @@ mod tests {
             result,
             Result::Err(error) if error.downcast_ref::<SyscallError>().unwrap() == &SyscallError::CopyOverlapping
         );
+    }
+
+    #[test_case(0x100000004,0x100000040,0x100000000)] // No Overlapping
+    fn test_broadcastmemcpy_happypath(dst_a: u64, dst_b: u64, src: u64) {
+        prepare_mockup!(invoke_context, program_id, bpf_loader::id());
+        let mut mem = (0..12).collect::<Vec<u8>>();
+        let config = Config::default();
+        let src_region = MemoryRegion::new_writable(&mut mem, src);
+
+        let mut memory_mapping = MemoryMapping::new(
+            vec![src_region],
+            &config,
+            SBPFVersion::V3,
+        )
+            .unwrap();
+
+        let result =
+            SyscallBroadcastMemcpy::rust(&mut invoke_context, dst_a, dst_b, src, 2, 2, &mut memory_mapping);
+
+        match result {
+            Ok(code) =>  assert_matches!(code, 0),
+            Err(e) => println!("Error: {}", e),
+        }
+
     }
 
     #[test_case(0xFFFFFFFFF, 0x100000006, 0xFFFFFFFFF)] // Dst lower bound

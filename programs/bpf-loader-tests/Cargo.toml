@@ -29,3 +29,7 @@ solana-signer = { workspace = true }
 solana-system-interface = { workspace = true }
 solana-transaction = { workspace = true }
 solana-transaction-error = { workspace = true }
+
+[dependencies]
+solana-program-runtime = "2.3.5"
+solana_rbpf = "0.8.5"

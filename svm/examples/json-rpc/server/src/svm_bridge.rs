@@ -189,6 +189,9 @@ pub fn create_custom_environment<'a>() -> BuiltinProgram<InvokeContext<'a>> {
         .register_function("sol_memcpy_", SyscallMemcpy::vm)
         .expect("Registration failed");
     loader
+        .register_function("sol_broadcast_memcpy_", SyscallBroadcastMemcpy::vm)
+        .expect("registration failed");
+    loader
         .register_function("sol_memset_", SyscallMemset::vm)
         .expect("Registration failed");
     loader
