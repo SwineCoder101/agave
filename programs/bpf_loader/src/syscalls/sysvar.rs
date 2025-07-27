@@ -168,6 +168,29 @@ declare_builtin_function!(
     }
 );
 
+declare_builtin_function!(
+    /// Get a Last Restart Slot sysvar
+    SyscallPeakStakeHistory,
+    fn rust(
+        invoke_context: &mut InvokeContext,
+        var_addr: u64,
+        _arg2: u64,
+        _arg3: u64,
+        _arg4: u64,
+        _arg5: u64,
+        memory_mapping: &mut MemoryMapping,
+    ) -> Result<u64, Error> {
+        get_sysvar(
+            invoke_context.get_sysvar_cache().get_stake_history(),
+            var_addr,
+            invoke_context.get_check_aligned(),
+            memory_mapping,
+            invoke_context,
+        )
+    }
+);
+
+
 const SYSVAR_NOT_FOUND: u64 = 2;
 const OFFSET_LENGTH_EXCEEDS_SYSVAR: u64 = 1;
 
