@@ -47,6 +47,30 @@ declare_builtin_function!(
 );
 
 declare_builtin_function!(
+    SyscallBroadcastMemcpy,
+    fn rust(
+        invoke_context: &mut InvokeContext,
+        dst_addr_one: u64,
+        dst_addr_two: u64,
+        src_addr: u64,
+        n_one: u64,
+        n_two: u64,
+        memory_mapping: &mut MemoryMapping,
+    ) -> Result<u64, Error> {
+        mem_op_consume(invoke_context, n_one)?;
+        mem_op_consume(invoke_context, n_two)?;
+
+        if !is_nonoverlapping(src_addr, n_one, dst_addr_one, n_one) || !is_nonoverlapping(src_addr, n_two, dst_addr_two, n_two) {
+            return Err(SyscallError::CopyOverlapping.into());
+        }
+
+        // host addresses can overlap so we always invoke memmove
+        memmove(invoke_context, dst_addr_two, src_addr, n_two, memory_mapping);
+        memmove(invoke_context, dst_addr_one, src_addr, n_one, memory_mapping)
+    }
+);
+
+declare_builtin_function!(
     /// memmove
     SyscallMemmove,
     fn rust(

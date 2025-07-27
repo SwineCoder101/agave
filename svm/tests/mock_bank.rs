@@ -378,6 +378,8 @@ pub fn create_custom_loader<'a>() -> BuiltinProgram<InvokeContext<'a>> {
     loader
         .register_function("sol_memcpy_", SyscallMemcpy::vm)
         .expect("Registration failed");
+    loader.register_function("sol_broadcastmemcpy_", SyscallBroadcastMemcpy::vm)
+        .expect("Registration failed");
     loader
         .register_function("sol_memset_", SyscallMemset::vm)
         .expect("Registration failed");
